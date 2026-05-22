@@ -8,7 +8,7 @@ export default function HomePage() {
             {/* HERO SECTION */}
             <section className={styles.hero}>
                 <video
-                    autoPlay
+                    autoPlay muted playsInline
                     loop
                     muted
                     playsInline
