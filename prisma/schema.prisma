@@ -1,5 +1,5 @@
-// SCHÉMA PRISMA UNIFIÉ - DIWAAN
-// Version complète avec système de partenariat intégré
+﻿// SCHÃ‰MA PRISMA UNIFIÃ‰ - DIWAAN
+// Version complÃ¨te avec systÃ¨me de partenariat intÃ©grÃ©
 
 generator client {
   provider = "prisma-client-js"
@@ -11,7 +11,7 @@ datasource db {
 }
 
 // ==========================================
-// MODÈLES EXISTANTS (Utilisateurs & Propriétés)
+// MODÃˆLES EXISTANTS (Utilisateurs & PropriÃ©tÃ©s)
 // ==========================================
 
 model User {
@@ -167,7 +167,7 @@ model PropertyInquiry {
 }
 
 // ==========================================
-// SYSTÈME DE PARTENARIAT PROMOTEUR-AGENCE
+// SYSTÃˆME DE PARTENARIAT PROMOTEUR-AGENCE
 // ==========================================
 
 model Developer {
@@ -807,7 +807,7 @@ model PriceCalculationHistory {
 }
 
 // ==========================================
-// VAULT JURIDIQUE & CHANTIER (Conformité)
+// VAULT JURIDIQUE & CHANTIER (ConformitÃ©)
 // ==========================================
 
 model ProjectComplianceDocument {
@@ -817,7 +817,7 @@ model ProjectComplianceDocument {
   category          DocumentCategory
   status            DocumentValidationStatus @default(PENDING)
   authority         String?
-  fileUrl           String   // Lien permanent crypté Cloudinary
+  fileUrl           String   // Lien permanent cryptÃ© Cloudinary
   fileSize          Float?
   fileType          String?
   expirationDate    DateTime?
@@ -875,3 +875,4 @@ enum NotaryStatus {
   ACTIVE
   SUSPENDED
 }
+
