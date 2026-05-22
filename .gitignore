@@ -35,3 +35,6 @@ next-env.d.ts
 
 # Prisma
 prisma/migrations/
+hs_err_pid*.log
+replay_pid*.log
+*.bak
