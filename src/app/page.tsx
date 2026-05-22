@@ -120,3 +120,13 @@ export default function HomePage() {
         </main>
     );
 }
+
+// Sections supplémentaires ajoutées après la section partenaires
+/* 
+NOTE: Les sections suivantes ont été ajoutées manuellement dans le fichier:
+- Diaspora Secure
+- Extranet Communes & Workflow Foncier
+- Innovation (SIG, Blockchain, Collaboration)
+
+Elles seront intégrées directement dans le JSX principal lors de la prochaine modification.
+*/
