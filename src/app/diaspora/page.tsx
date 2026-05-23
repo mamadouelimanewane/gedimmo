@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import Link from 'next/link';
 
@@ -13,10 +14,11 @@ export default function DiasporaSecure() {
             La plateforme n°1 pour la diaspora sénégalaise. Anti-arnaque, visites virtuelles certifiées et paiement séquestre.
           </p>
         </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {[
             { title: "Vérification Titres", desc: "Scan QR Code & API DGID en temps réel.", icon: "🛡️" },
-            { title: "Visio-Visites", desc: "Visites guidées en direct par agents assermentés.", icon": "📹" },
+            { title: "Visio-Visites", desc: "Visites guidées en direct par agents assermentés.", icon: "📹" },
             { title: "Paiement Escrow", desc: "Fonds bloqués chez notaire jusqu'à signature.", icon: "🔒" },
             { title: "Suivi Chantier", desc: "Caméras live et rapports hebdomadaires.", icon: "🏗️" }
           ].map((feat, idx) => (
@@ -27,6 +29,7 @@ export default function DiasporaSecure() {
             </div>
           ))}
         </div>
+
         <div className="bg-[#0A1628] rounded-3xl p-12 text-center text-white relative overflow-hidden">
           <div className="relative z-10">
             <h2 className="text-3xl font-bold font-serif mb-6">Prêt à investir sans risque ?</h2>
