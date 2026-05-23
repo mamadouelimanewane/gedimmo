@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import Link from 'next/link';
+
 export default function DiasporaSecure() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FAFAFA] to-white pt-24 pb-12">
@@ -9,16 +10,15 @@ export default function DiasporaSecure() {
           <span className="text-[#D4AF37] font-bold tracking-wider uppercase text-sm">Investissez en toute confiance</span>
           <h1 className="text-5xl font-bold text-[#0A1628] mt-2 font-serif">Diaspora Secure</h1>
           <p className="mt-6 text-xl text-slate-600 max-w-3xl mx-auto">
-            La plateforme n°1 pour la diaspora sénégalaise. Anti-arnaque, visites virtuelles certifiées et paiement séquestre.
+            La plateforme nÂ°1 pour la diaspora sÃ©nÃ©galaise. Anti-arnaque, visites virtuelles certifiÃ©es et paiement sÃ©questre.
           </p>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {[
-            { title: "Vérification Titres", desc: "Scan QR Code & API DGID en temps réel.", icon: "???" },
-            { title: "Visio-Visites", desc: "Visites guidées en direct par agents assermentés.", icon: "??" },
-            { title: "Paiement Escrow", desc: "Fonds bloqués chez notaire jusqu'à signature.", icon: "??" },
-            { title: "Suivi Chantier", desc: "Caméras live et rapports hebdomadaires.", icon: "???" }
+            { title: "VÃ©rification Titres", desc: "Scan QR Code & API DGID en temps rÃ©el.", icon: "ðŸ›¡ï¸" },
+            { title: "Visio-Visites", desc: "Visites guidÃ©es en direct par agents assermentÃ©s.", icon": "ðŸ“¹" },
+            { title: "Paiement Escrow", desc: "Fonds bloquÃ©s chez notaire jusqu'Ã  signature.", icon: "ðŸ”’" },
+            { title: "Suivi Chantier", desc: "CamÃ©ras live et rapports hebdomadaires.", icon: "ðŸ—ï¸" }
           ].map((feat, idx) => (
             <div key={idx} className="bg-white p-6 rounded-2xl shadow-xl hover:-translate-y-2 transition-transform duration-300">
               <div className="text-4xl mb-4">{feat.icon}</div>
@@ -27,16 +27,16 @@ export default function DiasporaSecure() {
             </div>
           ))}
         </div>
-<div className="bg-[#0A1628] rounded-3xl p-12 text-center text-white relative overflow-hidden">
+        <div className="bg-[#0A1628] rounded-3xl p-12 text-center text-white relative overflow-hidden">
           <div className="relative z-10">
-            <h2 className="text-3xl font-bold font-serif mb-6">Prêt à investir sans risque ?</h2>
-            <p className="mb-8 text-slate-300">Rejoignez les 500+ membres de la diaspora qui ont sécurisé leur investissement avec Diwaan.</p>
+            <h2 className="text-3xl font-bold font-serif mb-6">PrÃªt Ã  investir sans risque ?</h2>
+            <p className="mb-8 text-slate-300">Rejoignez les 500+ membres de la diaspora qui ont sÃ©curisÃ© leur investissement avec Diwaan.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Link href="/register" className="bg-[#D4AF37] text-[#0A1628] px-8 py-4 rounded-full font-bold hover:bg-white transition-colors">
-                Créer un compte sécurisé
+                CrÃ©er un compte sÃ©curisÃ©
               </Link>
               <Link href="/search?category=diaspora-certified" className="border border-white text-white px-8 py-4 rounded-full font-bold hover:bg-white hover:text-[#0A1628] transition-colors">
-                Voir les biens certifiés
+                Voir les biens certifiÃ©s
               </Link>
             </div>
           </div>

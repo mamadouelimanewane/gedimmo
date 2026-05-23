@@ -19,27 +19,27 @@ export default function Header() {
     return (
         <header className={styles.header}>
             <div className={styles.container}>
-                <nav className={styles.nav}><!-- Liens Modules --> <Link href="/diaspora" class="hover:text-[#D4AF37]">Diaspora</Link> <Link href="/extranet-communes" class="hover:text-[#D4AF37]">Communes</Link> <Link href="/blockchain" class="hover:text-[#D4AF37]">Blockchain</Link>
+                <nav className={styles.nav}><Link href="/diaspora" className="hover:text-[#D4AF37]">Diaspora</Link><Link href="/extranet-communes" className="hover:text-[#D4AF37]">Communes</Link><Link href="/blockchain" className="hover:text-[#D4AF37]">Blockchain</Link>
                     <div className={styles.navItem}>
                         <Link href="/search" className={styles.navLink}>{t.buy} <ChevronDown size={14} style={{ marginLeft: 4 }} /></Link>
                         <div className={styles.dropdownMenu}>
-                            <Link href="/search" className={styles.dropdownItem}>Maisons à vendre</Link>
+                            <Link href="/search" className={styles.dropdownItem}>Maisons Ã  vendre</Link>
                             <Link href="/search?filter=new" className={styles.dropdownItem}>Programmes neufs</Link>
-                            <Link href="/search?filter=coming_soon" className={styles.dropdownItem}>Bientôt disponible</Link>
+                            <Link href="/search?filter=coming_soon" className={styles.dropdownItem}>BientÃ´t disponible</Link>
                             <Link href="/search?filter=open" className={styles.dropdownItem}>Portes ouvertes</Link>
                             <div className={styles.separator} />
-                            <Link href="/search?filter=foreclosure" className={styles.dropdownItem}>Saisies immobilières</Link>
-                            <Link href="/search?filter=fsbo" className={styles.dropdownItem}>Vente par propriétaire</Link>
-                            <Link href="/search?filter=sold" className={styles.dropdownItem}>Vendus récemment</Link>
+                            <Link href="/search?filter=foreclosure" className={styles.dropdownItem}>Saisies immobiliÃ¨res</Link>
+                            <Link href="/search?filter=fsbo" className={styles.dropdownItem}>Vente par propriÃ©taire</Link>
+                            <Link href="/search?filter=sold" className={styles.dropdownItem}>Vendus rÃ©cemment</Link>
 
                             <div className={styles.separator} />
                             <div style={{ fontWeight: 'bold', padding: '12px 24px 4px', fontSize: '12px', color: '#666', textTransform: 'uppercase' }}>Financement</div>
-                            <Link href="/loans" className={styles.dropdownItem}>Découvrir Diwaan Home Loans</Link>
-                            <Link href="/loans/buy-ability" className={styles.dropdownItem}>Calculer votre capacité d'achat</Link>
-                            <Link href="/loans/pre-qualify" className={styles.dropdownItem}>Obtenir une pré-qualification</Link>
-                            <Link href="/loans#calculator" className={styles.dropdownItem}>Estimer vos mensualités</Link>
+                            <Link href="/loans" className={styles.dropdownItem}>DÃ©couvrir Diwaan Home Loans</Link>
+                            <Link href="/loans/buy-ability" className={styles.dropdownItem}>Calculer votre capacitÃ© d'achat</Link>
+                            <Link href="/loans/pre-qualify" className={styles.dropdownItem}>Obtenir une prÃ©-qualification</Link>
+                            <Link href="/loans#calculator" className={styles.dropdownItem}>Estimer vos mensualitÃ©s</Link>
                             <Link href="/loans/rates" className={styles.dropdownItem}>Voir les taux actuels</Link>
-                            <Link href="/loans/dashboard" className={styles.dropdownItem} style={{ color: '#006AFF' }}>Mon dossier de prêt</Link>
+                            <Link href="/loans/dashboard" className={styles.dropdownItem} style={{ color: '#006AFF' }}>Mon dossier de prÃªt</Link>
                         </div>
                     </div>
 
@@ -47,8 +47,8 @@ export default function Header() {
                         <Link href="/rent" className={styles.navLink}>{t.rent} <ChevronDown size={14} style={{ marginLeft: 4 }} /></Link>
                         <div className={styles.dropdownMenu} style={{ minWidth: 300 }}>
                             <div style={{ fontWeight: 'bold', padding: '12px 24px 4px', fontSize: '12px', color: '#666', textTransform: 'uppercase' }}>Chercher une location</div>
-                            <Link href="/rent" className={styles.dropdownItem}>Appartements à louer</Link>
-                            <Link href="/rent?type=house" className={styles.dropdownItem}>Maisons à louer</Link>
+                            <Link href="/rent" className={styles.dropdownItem}>Appartements Ã  louer</Link>
+                            <Link href="/rent?type=house" className={styles.dropdownItem}>Maisons Ã  louer</Link>
 
                             <div className={styles.separator} />
 
@@ -74,11 +74,11 @@ export default function Header() {
                             <div style={{ fontWeight: 'bold', padding: '12px 24px 4px', fontSize: '12px', color: '#666', textTransform: 'uppercase' }}>Ressources</div>
                             <Link href="/sell" className={styles.dropdownItem}>Explorer vos options</Link>
                             <Link href="/sell/valuation" className={styles.dropdownItem}>Estimer votre bien (Zestimate)</Link>
-                            <Link href="/market-trends" className={styles.dropdownItem}>Marché immobilier Sénégal</Link>
+                            <Link href="/market-trends" className={styles.dropdownItem}>MarchÃ© immobilier SÃ©nÃ©gal</Link>
                             <Link href="/guides" className={styles.dropdownItem}>Guide du vendeur</Link>
                             <div className={styles.separator} />
                             <Link href="/agents" className={styles.dropdownItem}>Trouver un agent vendeur</Link>
-                            <Link href="/sell/fsbo" className={styles.dropdownItem}>Publier une annonce (Propriétaire)</Link>
+                            <Link href="/sell/fsbo" className={styles.dropdownItem}>Publier une annonce (PropriÃ©taire)</Link>
                         </div>
                     </div>
 
@@ -89,9 +89,9 @@ export default function Header() {
                             <div className={styles.separator} />
                             <Link href="/guides/acheteur" className={styles.dropdownItem}>Guide de l'Acheteur</Link>
                             <Link href="/guides/vendeur" className={styles.dropdownItem}>Guide du Vendeur</Link>
-                            <Link href="/guides/juridique" className={styles.dropdownItem}>Juridique & Fiscalité</Link>
-                            <Link href="/guides/financement" className={styles.dropdownItem}>Financement & Prêts</Link>
-                            <Link href="/guides/construction" className={styles.dropdownItem}>Construction & Rénovation</Link>
+                            <Link href="/guides/juridique" className={styles.dropdownItem}>Juridique & FiscalitÃ©</Link>
+                            <Link href="/guides/financement" className={styles.dropdownItem}>Financement & PrÃªts</Link>
+                            <Link href="/guides/construction" className={styles.dropdownItem}>Construction & RÃ©novation</Link>
                         </div>
                     </div>
 
@@ -114,14 +114,14 @@ export default function Header() {
 
                             <div style={{ padding: '12px 24px 4px', fontSize: '12px', color: '#666', fontWeight: 'bold', textTransform: 'uppercase' }}>Je suis un pro</div>
                             <Link href="/pros/solutions" className={styles.dropdownItem}>Solutions pour agents</Link>
-                            <Link href="/pros/solutions" className={styles.dropdownItem}>Publicité agent</Link>
+                            <Link href="/pros/solutions" className={styles.dropdownItem}>PublicitÃ© agent</Link>
                             <Link href="/pros/resources" className={styles.dropdownItem}>Centre de ressources</Link>
-                            <Link href="/pros" className={styles.dropdownItem}>Créer un compte gratuit</Link>
+                            <Link href="/pros" className={styles.dropdownItem}>CrÃ©er un compte gratuit</Link>
 
                             <div className={styles.separator} />
                             <Link href="/pros/resources/business-plan" className={styles.dropdownItem}>Business Plan Immobilier</Link>
                             <Link href="/pros/resources" className={styles.dropdownItem}>Scripts de vente</Link>
-                            <Link href="/pros/resources" className={styles.dropdownItem}>Modèles de flyers</Link>
+                            <Link href="/pros/resources" className={styles.dropdownItem}>ModÃ¨les de flyers</Link>
                         </div>
                     </div>
                 </nav>
@@ -141,7 +141,7 @@ export default function Header() {
                     <Link href="/dashboard" className={styles.navLink}>Mon Tableau de Bord</Link>
 
                     {isAuthenticated ? (
-                        <button onClick={logout} className="btn btn-ghost" style={{ color: 'red' }}>Déconnexion</button>
+                        <button onClick={logout} className="btn btn-ghost" style={{ color: 'red' }}>DÃ©connexion</button>
                     ) : (
                         <Link href="/login" style={{ textDecoration: 'none' }}>
                             <button className="btn btn-ghost">{t.signIn}</button>
@@ -152,4 +152,5 @@ export default function Header() {
         </header>
     );
 }
+
 
