@@ -19,7 +19,7 @@ export default function Header() {
     return (
         <header className={styles.header}>
             <div className={styles.container}>
-                <nav className={styles.nav}>
+                <nav className={styles.nav}><!-- Liens Modules --> <Link href="/diaspora" class="hover:text-[#D4AF37]">Diaspora</Link> <Link href="/extranet-communes" class="hover:text-[#D4AF37]">Communes</Link> <Link href="/blockchain" class="hover:text-[#D4AF37]">Blockchain</Link>
                     <div className={styles.navItem}>
                         <Link href="/search" className={styles.navLink}>{t.buy} <ChevronDown size={14} style={{ marginLeft: 4 }} /></Link>
                         <div className={styles.dropdownMenu}>
@@ -152,3 +152,4 @@ export default function Header() {
         </header>
     );
 }
+
