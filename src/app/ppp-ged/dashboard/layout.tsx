@@ -1,11 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function PppGedLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  // Mock State for Role Testing
+  const [userRole, setUserRole] = useState({ role: 'COMMUNE_ADMIN', department: undefined as string | undefined });
+
 
   const links = [
     { href: '/ppp-ged/dashboard', label: 'Tableau de bord', icon: '📊' },
@@ -53,19 +56,50 @@ export default function PppGedLayout({ children }: { children: React.ReactNode }
 
       {/* Main Content */}
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        <header style={{ height: '70px', background: 'white', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 32px' }}>
+        <header style={{ height: '70px', background: 'white', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px' }}>
+          
+          {/* SIMULATEUR DE RÔLES POUR LES TESTS */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '13px', fontWeight: '700', color: '#64748b' }}>Simuler le rôle :</span>
+            <select 
+              value={userRole.role + (userRole.department ? `:${userRole.department}` : '')}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val.includes(':')) {
+                  const [r, d] = val.split(':');
+                  setUserRole({ role: r, department: d });
+                } else {
+                  setUserRole({ role: val, department: undefined });
+                }
+              }}
+              style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px', fontWeight: '600', color: '#0f172a', outline: 'none' }}
+            >
+              <option value="COMMUNE_ADMIN">Commune (Superviseur)</option>
+              <option value="PROMOTEUR">Promoteur (Lecture / Dépôt)</option>
+              <option value="TECH_AGENT:ONAS">Agent ONAS (Assainissement)</option>
+              <option value="TECH_AGENT:SENELEC">Agent SENELEC (Électricité)</option>
+              <option value="TECH_AGENT:SDE">Agent SDE (Eaux)</option>
+              <option value="TECH_AGENT:Urbanisme">Agent Urbanisme</option>
+            </select>
+          </div>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a' }}>Admin Commune</div>
-              <div style={{ fontSize: '12px', color: '#64748b' }}>Mairie de Diamniadio</div>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a' }}>
+                {userRole.role === 'COMMUNE_ADMIN' ? 'Admin Commune' : userRole.role === 'PROMOTEUR' ? 'Promoteur' : `Agent ${userRole.department}`}
+              </div>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>
+                {userRole.role === 'COMMUNE_ADMIN' ? 'Mairie de Diamniadio' : userRole.role === 'PROMOTEUR' ? 'Entreprise BTP' : 'Service Technique'}
+              </div>
             </div>
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
-              🏛️
+              {userRole.role === 'COMMUNE_ADMIN' ? '🏛️' : userRole.role === 'PROMOTEUR' ? '🏗️' : '👷'}
             </div>
           </div>
         </header>
         <div style={{ padding: '32px', flex: 1, overflowY: 'auto' }}>
-          {children}
+          {/* We pass userRole context via a crude window variable since it's a mock for testing without full Context refactor */}
+          {React.cloneElement(children as React.ReactElement, { userRole })}
         </div>
       </main>
     </div>

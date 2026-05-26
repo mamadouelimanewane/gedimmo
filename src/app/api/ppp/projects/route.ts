@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
-// Import standard auth if using it, or verify via simple token/permissions.
 
 export async function GET() {
   try {
     const projects = await prisma.pPPProject.findMany({
       include: {
-        phases: true,
+        phases: {
+          orderBy: { phaseNumber: 'asc' },
+          include: { visas: true }
+        },
       },
       orderBy: { createdAt: 'desc' }
     });
@@ -24,24 +25,24 @@ export async function POST(request: Request) {
     const data = await request.json();
     const { name, commune, description, developerId } = data;
     
-    // Create project with its 7 phases
+    // Create project with its 7 phases — Phase 1 is unlocked by default
     const project = await prisma.pPPProject.create({
       data: {
         name,
         commune,
         description,
         developerId: developerId || null,
-        status: 'INITIATED',
+        status: 'IN_PROGRESS',
         progress: 0,
         phases: {
           create: [
-            { phaseNumber: 1, title: 'Identification du terrain', description: 'NICAD + bornage' },
-            { phaseNumber: 2, title: 'Convention PPP', description: 'commune + promoteur' },
-            { phaseNumber: 3, title: 'Bail emphyteotique / deliberation', description: 'Bail ou deliberation prefet' },
+            { phaseNumber: 1, title: 'Identification du terrain', description: 'NICAD + bornage', isUnlocked: true, status: 'IN_PROGRESS' },
+            { phaseNumber: 2, title: 'Convention PPP', description: 'Commune + promoteur' },
+            { phaseNumber: 3, title: 'Bail emphytéotique / délibération', description: 'Bail ou délibération préfet' },
             { phaseNumber: 4, title: 'Autorisation de lotir', description: 'ONAS, SENELEC, SDE' },
-            { phaseNumber: 5, title: 'Mise en valeur VRD', description: 'declaration chantier' },
-            { phaseNumber: 6, title: 'Ventes & actes notaries', description: 'actes' },
-            { phaseNumber: 7, title: 'Titre foncier individuel', description: 'Conservation' },
+            { phaseNumber: 5, title: 'Mise en valeur VRD', description: 'VRD + déclaration chantier' },
+            { phaseNumber: 6, title: 'Ventes & actes notariés', description: 'Actes notariés' },
+            { phaseNumber: 7, title: 'Titre foncier individuel', description: 'Conservation foncière' },
           ]
         }
       },
@@ -50,16 +51,16 @@ export async function POST(request: Request) {
       }
     });
     
-    // Now create the 8 visas for each phase
+    // Create the 8 visas for each phase
     const visaNames = [
-      { name: 'ONAS', authority: 'Assainissement' },
-      { name: 'SENELEC', authority: 'Electricite' },
-      { name: 'SDE', authority: 'Eaux' },
-      { name: 'AGEROUTE', authority: 'Routes' },
-      { name: 'Protection Civile', authority: 'Securite' },
-      { name: 'Urbanisme', authority: 'Urbanisme' },
-      { name: 'DGID', authority: 'Domaines' },
-      { name: 'Prefet', authority: 'Prefecture' }
+      { name: 'ONAS', authority: 'Office National de l\'Assainissement' },
+      { name: 'SENELEC', authority: 'Société Nationale d\'Électricité' },
+      { name: 'SDE', authority: 'Société des Eaux' },
+      { name: 'AGEROUTE', authority: 'Agence des Routes' },
+      { name: 'Protection Civile', authority: 'Direction Protection Civile' },
+      { name: 'Urbanisme', authority: 'Direction de l\'Urbanisme' },
+      { name: 'DGID', authority: 'Direction Générale des Impôts et Domaines' },
+      { name: 'Préfet', authority: 'Préfecture du Département' }
     ];
     
     for (const phase of project.phases) {

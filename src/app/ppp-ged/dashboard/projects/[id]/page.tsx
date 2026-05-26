@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
-export default function PppProjectDetails({ params }: { params: { id: string } }) {
+export default function PppProjectDetails({ params, userRole }: { params: { id: string }, userRole?: any }) {
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activePhase, setActivePhase] = useState<string | null>(null);
@@ -124,12 +124,14 @@ export default function PppProjectDetails({ params }: { params: { id: string } }
             <div style={{ fontSize: '64px', marginBottom: '16px' }}>🔒</div>
             <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>Phase Verrouillée</h2>
             <p style={{ color: '#64748b', fontSize: '16px', maxWidth: '400px', textAlign: 'center', marginBottom: '24px' }}>Vous devez d'abord valider toutes les étapes de la phase précédente pour accéder à celle-ci.</p>
-            <button 
-              onClick={() => toggleUnlockPhase(currentPhaseDetails.id, false)}
-              style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #fcd34d', padding: '10px 24px', borderRadius: '8px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-            >
-              <span>🔑</span> Forcer le déverrouillage (Admin)
-            </button>
+            {userRole?.role === 'COMMUNE_ADMIN' && (
+              <button 
+                onClick={() => toggleUnlockPhase(currentPhaseDetails.id, false)}
+                style={{ background: '#fef3c7', color: '#d97706', border: '1px solid #fcd34d', padding: '10px 24px', borderRadius: '8px', fontWeight: '700', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+              >
+                <span>🔑</span> Forcer le déverrouillage (Admin)
+              </button>
+            )}
           </div>
         )}
 
@@ -146,7 +148,7 @@ export default function PppProjectDetails({ params }: { params: { id: string } }
                 <p style={{ color: '#64748b', fontSize: '16px', margin: 0 }}>{currentPhaseDetails.description}</p>
               </div>
               
-              {currentPhaseDetails.isUnlocked && (
+              {currentPhaseDetails.isUnlocked && userRole?.role === 'COMMUNE_ADMIN' && (
                 <button 
                   onClick={() => toggleUnlockPhase(currentPhaseDetails.id, true)}
                   style={{ background: 'white', color: '#64748b', border: '1px solid #e2e8f0', padding: '8px 16px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '13px' }}
@@ -159,7 +161,11 @@ export default function PppProjectDetails({ params }: { params: { id: string } }
             {/* VISAS ET GED INTEGREE */}
             <h3 style={{ fontSize: '18px', fontWeight: '800', color: '#0f172a', marginBottom: '24px', borderBottom: '2px solid #f1f5f9', paddingBottom: '12px' }}>8 Visas Techniques Requis & Dépôt Documentaire</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '40px' }}>
-              {currentPhaseDetails.visas.map((visa: any) => (
+              {currentPhaseDetails.visas.map((visa: any) => {
+                const canValidate = userRole?.role === 'COMMUNE_ADMIN' || (userRole?.role === 'TECH_AGENT' && userRole?.department && visa.name.toUpperCase().includes(userRole.department.toUpperCase()));
+                const canUpload = userRole?.role === 'COMMUNE_ADMIN' || userRole?.role === 'PROMOTEUR';
+                
+                return (
                 <div key={visa.id} style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', background: visa.status === 'APPROVED' ? '#f8fafc' : 'white', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                     <div>
@@ -174,13 +180,19 @@ export default function PppProjectDetails({ params }: { params: { id: string } }
                   </div>
                   
                   {/* Mini-GED Drap & Drop for this Visa */}
-                  <div style={{ border: '1px dashed #cbd5e1', borderRadius: '8px', padding: '16px', textAlign: 'center', background: '#f1f5f9', cursor: 'pointer', marginBottom: '16px', transition: 'background 0.2s' }}>
-                    <div style={{ fontSize: '20px', marginBottom: '8px' }}>📄</div>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#0f172a' }}>Attacher le justificatif</div>
-                    <div style={{ fontSize: '11px', color: '#64748b' }}>PDF/PNG (max 5MB)</div>
-                  </div>
+                  {canUpload ? (
+                    <div style={{ border: '1px dashed #cbd5e1', borderRadius: '8px', padding: '16px', textAlign: 'center', background: '#f1f5f9', cursor: 'pointer', marginBottom: '16px', transition: 'background 0.2s' }}>
+                      <div style={{ fontSize: '20px', marginBottom: '8px' }}>📄</div>
+                      <div style={{ fontSize: '13px', fontWeight: '600', color: '#0f172a' }}>Attacher le justificatif</div>
+                      <div style={{ fontSize: '11px', color: '#64748b' }}>PDF/PNG (max 5MB)</div>
+                    </div>
+                  ) : (
+                    <div style={{ border: '1px solid #f1f5f9', borderRadius: '8px', padding: '12px', textAlign: 'center', background: '#f8fafc', marginBottom: '16px' }}>
+                      <div style={{ fontSize: '12px', color: '#64748b' }}>Justificatif en attente de dépôt par le promoteur</div>
+                    </div>
+                  )}
 
-                  {visa.status !== 'APPROVED' && (
+                  {visa.status !== 'APPROVED' && canValidate && (
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button onClick={() => updateVisaStatus(visa.id, 'APPROVED')} style={{ flex: 1, padding: '10px', background: '#10b981', color: 'white', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', transition: 'background 0.2s' }}>Approuver</button>
                       <button onClick={() => updateVisaStatus(visa.id, 'REJECTED')} style={{ flex: 1, padding: '10px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '6px', fontSize: '13px', fontWeight: '700', cursor: 'pointer', transition: 'background 0.2s' }}>Rejeter</button>
@@ -192,7 +204,7 @@ export default function PppProjectDetails({ params }: { params: { id: string } }
                     </div>
                   )}
                 </div>
-              ))}
+              )})}
             </div>
 
           </>
