@@ -4,9 +4,30 @@ import prisma from '@/lib/prisma';
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   try {
     const data = await request.json();
-    const { status, comments, validatedById } = data;
-    
-    // Fetch the visa and its phase
+    const { status, comments, isUnlocked } = data;
+
+    // ---- PHASE UNLOCK (Admin action) ----
+    if (typeof isUnlocked !== 'undefined') {
+      const phase = await prisma.pPPPhase.update({
+        where: { id: params.id },
+        data: { isUnlocked }
+      });
+      const firstUser = await prisma.user.findFirst();
+      if (firstUser) {
+        await prisma.auditLog.create({
+          data: {
+            action: isUnlocked ? 'PHASE_UNLOCKED' : 'PHASE_LOCKED',
+            entityId: phase.id,
+            entityType: 'PPPPhase',
+            userId: firstUser.id,
+            details: { phaseOrder: phase.order, isUnlocked }
+          }
+        });
+      }
+      return NextResponse.json({ success: true, phase });
+    }
+
+    // ---- VISA STATUS UPDATE ----
     const visaDetails = await prisma.pPPVisa.findUnique({
       where: { id: params.id },
       include: { phase: true }
@@ -16,11 +37,8 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       return NextResponse.json({ error: 'Visa not found' }, { status: 404 });
     }
 
-    // Check locking logic: A phase must be 'IN_PROGRESS', 'VALIDATED', or unlocked.
-    // If it's PENDING and not unlocked, and it's not Phase 1, we must check if previous phase is validated.
-    // To simplify: if the phase is PENDING and not unlocked, we shouldn't allow edits unless it's Phase 1.
+    // Locking logic
     if (visaDetails.phase.phaseNumber > 1 && visaDetails.phase.status === 'PENDING' && !visaDetails.phase.isUnlocked) {
-      // Check if previous phase is validated
       const prevPhase = await prisma.pPPPhase.findFirst({
         where: { 
           projectId: visaDetails.phase.projectId,
@@ -40,7 +58,28 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         ...(status === 'APPROVED' ? { validatedAt: new Date() } : {}),
       }
     });
-    
+
+    // AUDIT LOG + NOTIFICATION
+    const firstUser = await prisma.user.findFirst();
+    if (firstUser) {
+      await prisma.auditLog.create({
+        data: {
+          action: `VISA_${status}`,
+          entityId: visa.id,
+          entityType: 'PPPVisa',
+          userId: firstUser.id,
+          details: { visaName: visa.name, authority: visa.authority, status }
+        }
+      });
+      await prisma.notification.create({
+        data: {
+          message: `Visa "${visa.name}" → ${status === 'APPROVED' ? '✅ Approuvé' : status === 'REJECTED' ? '❌ Rejeté' : 'Mis à jour'}.`,
+          userId: firstUser.id,
+          link: `/ppp-ged/dashboard/projects/${visaDetails.phase.projectId}`
+        }
+      });
+    }
+
     // Auto-validate phase if all visas are approved
     if (status === 'APPROVED') {
       const phase = await prisma.pPPPhase.findUnique({
@@ -51,13 +90,21 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       if (phase && phase.visas.every((v: any) => v.status === 'APPROVED' || v.id === visa.id)) {
         await prisma.pPPPhase.update({
           where: { id: phase.id },
-          data: {
-            status: 'VALIDATED',
-            completedAt: new Date()
-          }
+          data: { status: 'VALIDATED', completedAt: new Date() }
         });
+        const firstUser2 = await prisma.user.findFirst();
+        if (firstUser2) {
+          await prisma.auditLog.create({
+            data: {
+              action: 'PHASE_VALIDATED',
+              entityId: phase.id,
+              entityType: 'PPPPhase',
+              userId: firstUser2.id,
+              details: { phaseNumber: phase.phaseNumber }
+            }
+          });
+        }
       } else if (phase && phase.status === 'PENDING') {
-        // Mark phase as IN_PROGRESS if this is the first visa approved
         await prisma.pPPPhase.update({
           where: { id: phase.id },
           data: { status: 'IN_PROGRESS' }
