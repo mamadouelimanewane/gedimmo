@@ -32,7 +32,7 @@ export default function BlockchainPage() {
       <div style={{ textAlign: 'center', padding: '80px 24px 48px' }}>
         <div style={{ display: 'inline-block', background: 'rgba(212,175,55,0.15)', border: '1px solid rgba(212,175,55,0.4)', borderRadius: '4px', padding: '6px 20px', fontSize: '11px', letterSpacing: '3px', color: '#D4AF37', fontWeight: 'bold', marginBottom: '24px', textTransform: 'uppercase' }}>Securite Immutabilite Confiance</div>
         <h1 style={{ fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: '800', color: '#D4AF37', margin: '0 0 20px', letterSpacing: '-1px' }}>Registre Blockchain & Archives Scellees</h1>
-        <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.65)', maxWidth: '640px', margin: '0 auto', lineHeight: '1.7' }}>Chaque acte foncier est hache cryptographiquement (SHA-256) et ancre sur un registre prive inalterable. TraÃ§abilite totale. Prevention radicale des doubles ventes.</p>
+        <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.65)', maxWidth: '640px', margin: '0 auto', lineHeight: '1.7' }}>Chaque acte foncier est hache cryptographiquement (SHA-256) et ancre sur un registre prive inalterable. Traçabilite totale. Prevention radicale des doubles ventes.</p>
       </div>
 
       {/* STATS */}

@@ -31,6 +31,8 @@ model User {
   messages      Message[]  @relation("UserMessages")
   sentMessages  Message[]  @relation("SentMessages")
   transactions  Transaction[]
+  validatedVisas PPPVisa[]
+  uploadedDocuments GEDDocument[]
   
   @@map("users")
 }
@@ -198,6 +200,7 @@ model Developer {
   plots                DeveloperPlot[]
   sales                DeveloperSale[]
   pricingRules         PricingRule[]
+  pppProjects          PPPProject[]
   
   @@map("developers")
 }
@@ -804,6 +807,111 @@ model PriceCalculationHistory {
   plot                 DeveloperPlot @relation(fields: [plotId], references: [id])
   
   @@map("price_calculation_history")
+}
+
+// ==========================================
+// MODULE GED - EXTRANET COMMUNES & PROMOTEURS (PPP)
+// ==========================================
+
+model PPPProject {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  developerId     String?      @db.ObjectId
+  commune         String
+  description     String?
+  status          PPPStatus    @default(INITIATED)
+  progress        Float        @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  phases          PPPPhase[]
+  documents       GEDDocument[]
+
+  developer       Developer?   @relation(fields: [developerId], references: [id])
+
+  @@map("ppp_projects")
+}
+
+enum PPPStatus {
+  INITIATED
+  IN_PROGRESS
+  COMPLETED
+  SUSPENDED
+}
+
+model PPPPhase {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  projectId       String       @db.ObjectId
+  phaseNumber     Int
+  title           String
+  description     String?
+  status          PhaseStatus  @default(PENDING)
+  completedAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  visas           PPPVisa[]
+  documents       GEDDocument[]
+
+  project         PPPProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("ppp_phases")
+}
+
+enum PhaseStatus {
+  PENDING
+  IN_PROGRESS
+  VALIDATED
+  REJECTED
+}
+
+model PPPVisa {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  phaseId         String       @db.ObjectId
+  name            String
+  authority       String
+  status          VisaStatus   @default(PENDING)
+  comments        String?
+  validatedAt     DateTime?
+  validatedById   String?      @db.ObjectId
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  documents       GEDDocument[]
+
+  phase           PPPPhase     @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  validatedBy     User?        @relation(fields: [validatedById], references: [id])
+
+  @@map("ppp_visas")
+}
+
+enum VisaStatus {
+  PENDING
+  REQUESTED
+  APPROVED
+  REJECTED
+}
+
+model GEDDocument {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  projectId       String       @db.ObjectId
+  phaseId         String?      @db.ObjectId
+  visaId          String?      @db.ObjectId
+  uploadedById    String       @db.ObjectId
+  title           String
+  fileUrl         String
+  fileType        String
+  fileSize        Int?
+  documentType    String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  project         PPPProject   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  phase           PPPPhase?    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  visa            PPPVisa?     @relation(fields: [visaId], references: [id], onDelete: Cascade)
+  uploadedBy      User         @relation(fields: [uploadedById], references: [id])
+
+  @@map("ged_documents")
 }
 
 // ==========================================
