@@ -846,6 +846,7 @@ model PPPPhase {
   title           String
   description     String?
   status          PhaseStatus  @default(PENDING)
+  isUnlocked      Boolean      @default(false)
   completedAt     DateTime?
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
