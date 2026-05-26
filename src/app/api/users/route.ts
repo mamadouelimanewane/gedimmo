@@ -35,6 +35,8 @@ export async function GET(request: NextRequest) {
                     emailVerified: true,
                     createdAt: true,
                     updatedAt: true,
+                    customRole: true,
+                    agency: true,
                     _count: {
                         select: { properties: true, favorites: true },
                     },

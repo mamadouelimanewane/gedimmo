@@ -21,7 +21,11 @@ model User {
   name          String
   phone         String?
   role          UserRole  @default(USER)
-  department    String?   // Ex: 'ONAS', 'SENELEC', 'SDE' pour un TECH_AGENT
+  department    String?   // Deprecated, keep for backward compat or migrate data
+  customRoleId  String?   @db.ObjectId
+  customRole    CustomRole? @relation(fields: [customRoleId], references: [id])
+  agencyId      String?   @db.ObjectId
+  agency        Agency?     @relation(fields: [agencyId], references: [id])
   avatar        String?
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
@@ -46,6 +50,26 @@ enum UserRole {
   COMMUNE_ADMIN
   PROMOTEUR
   TECH_AGENT
+}
+
+// Nouveaux modèles dynamiques
+model CustomRole {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
+  permissions String[] // ex: 'READ_PROJECTS', 'VALIDATE_VISAS', 'FORCE_UNLOCK', 'MANAGE_USERS'
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Agency {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique // ex: 'ONAS', 'SENELEC'
+  description String?
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Property {

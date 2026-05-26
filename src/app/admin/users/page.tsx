@@ -9,11 +9,29 @@ export default function UsersPage() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState<any>(null);
     const [editFormData, setEditFormData] = useState<any>({});
+    
+    // Dynamic Roles & Agencies
+    const [customRoles, setCustomRoles] = useState<any[]>([]);
+    const [agencies, setAgencies] = useState<any[]>([]);
 
-    // Load users from API
+    // Load users and dynamics from API
     useEffect(() => {
         loadUsers();
+        loadDynamics();
     }, []);
+
+    const loadDynamics = async () => {
+        try {
+            const [rolesRes, agenciesRes] = await Promise.all([
+                fetch('/api/admin/roles').then(r => r.json()),
+                fetch('/api/admin/agencies').then(r => r.json())
+            ]);
+            if (rolesRes.success) setCustomRoles(rolesRes.roles);
+            if (agenciesRes.success) setAgencies(agenciesRes.agencies);
+        } catch (error) {
+            console.error('Failed to load dynamics', error);
+        }
+    };
 
     const loadUsers = async () => {
         setLoading(true);
@@ -56,7 +74,9 @@ export default function UsersPage() {
             email: user.email,
             role: user.role,
             status: user.status || 'Actif',
-            department: user.department || ''
+            department: user.department || '', // Legacy
+            customRoleId: user.customRole?.id || '',
+            agencyId: user.agency?.id || ''
         });
         setShowEditModal(true);
     };
@@ -123,10 +143,11 @@ export default function UsersPage() {
                                             borderRadius: '6px',
                                             fontWeight: 'bold',
                                             fontSize: '12px',
-                                            background: ['ADMIN', 'COMMUNE_ADMIN'].includes(user.role) ? '#E6E6FA' : user.role === 'TECH_AGENT' ? '#FFF5E6' : user.role === 'PROMOTEUR' ? '#E6F0FF' : '#F4F7FE',
-                                            color: ['ADMIN', 'COMMUNE_ADMIN'].includes(user.role) ? '#4318FF' : user.role === 'TECH_AGENT' ? '#FF8C00' : user.role === 'PROMOTEUR' ? '#006AFF' : '#666'
+                                            background: user.customRole ? '#FFF5E6' : ['ADMIN', 'COMMUNE_ADMIN'].includes(user.role) ? '#E6E6FA' : '#F4F7FE',
+                                            color: user.customRole ? '#FF8C00' : ['ADMIN', 'COMMUNE_ADMIN'].includes(user.role) ? '#4318FF' : '#666'
                                         }}>
-                                            {user.role} {user.department ? `(${user.department})` : ''}
+                                            {user.customRole ? user.customRole.name : user.role}
+                                            {user.agency ? ` (${user.agency.name})` : user.department ? ` (${user.department})` : ''}
                                         </span>
                                     </td>
                                     <td style={{ padding: '16px', color: '#666' }}>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
@@ -213,8 +234,28 @@ export default function UsersPage() {
                                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Email</label>
                                 <input type="email" value={editFormData.email} onChange={(e) => setEditFormData({...editFormData, email: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }} />
                             </div>
+                            <div style={{ marginBottom: '16px', background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Rôle Spécifique Dynamique</label>
+                                <select value={editFormData.customRoleId || ''} onChange={(e) => setEditFormData({...editFormData, customRoleId: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }}>
+                                    <option value="">-- Aucun rôle spécifique --</option>
+                                    {customRoles.map(cr => (
+                                        <option key={cr.id} value={cr.id}>{cr.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div style={{ marginBottom: '16px', background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Agence / Autorité Dynamique</label>
+                                <select value={editFormData.agencyId || ''} onChange={(e) => setEditFormData({...editFormData, agencyId: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }}>
+                                    <option value="">-- Aucune agence --</option>
+                                    {agencies.map(ag => (
+                                        <option key={ag.id} value={ag.id}>{ag.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <div style={{ marginBottom: '16px' }}>
-                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Rôle</label>
+                                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Rôle de base (Hérité)</label>
                                 <select value={editFormData.role} onChange={(e) => setEditFormData({...editFormData, role: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }}>
                                     <option value="USER">Utilisateur Normal</option>
                                     <option value="AGENT">Agent Immobilier</option>
@@ -226,9 +267,9 @@ export default function UsersPage() {
                                 </select>
                             </div>
                             
-                            {editFormData.role === 'TECH_AGENT' && (
+                            {editFormData.role === 'TECH_AGENT' && !editFormData.agencyId && (
                                 <div style={{ marginBottom: '16px' }}>
-                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Département (Agent Technique)</label>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Département (Legacy)</label>
                                     <select value={editFormData.department || ''} onChange={(e) => setEditFormData({...editFormData, department: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }}>
                                         <option value="">Sélectionner un département...</option>
                                         <option value="ONAS">ONAS (Assainissement)</option>

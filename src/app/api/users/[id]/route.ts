@@ -30,7 +30,7 @@ export async function PUT(
         }
 
         const body = await request.json();
-        const { name, email, role, phone, department } = body;
+        const { name, email, role, phone, department, customRoleId, agencyId } = body;
 
         const user = await prisma.user.update({
             where: { id: params.id },
@@ -39,7 +39,9 @@ export async function PUT(
                 email,
                 role,
                 phone,
-                department
+                department, // Legacy
+                customRoleId: customRoleId || null,
+                agencyId: agencyId || null
             },
             select: {
                 id: true,
@@ -48,6 +50,8 @@ export async function PUT(
                 phone: true,
                 role: true,
                 department: true,
+                customRole: true,
+                agency: true,
                 updatedAt: true
             }
         });
