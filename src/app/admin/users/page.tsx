@@ -8,6 +8,7 @@ export default function UsersPage() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [editFormData, setEditFormData] = useState<any>({});
 
     // Load users from API
     useEffect(() => {
@@ -50,7 +51,34 @@ export default function UsersPage() {
 
     const handleEdit = (user: any) => {
         setSelectedUser(user);
+        setEditFormData({
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            status: user.status || 'Actif',
+            department: user.department || ''
+        });
         setShowEditModal(true);
+    };
+
+    const handleSaveEdit = async (e: any) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`/api/users/${selectedUser.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(editFormData)
+            });
+            const data = await response.json();
+            if (data.success) {
+                setShowEditModal(false);
+                loadUsers();
+            } else {
+                alert('Erreur: ' + data.error);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const handleGodMode = (user: any) => {
@@ -95,13 +123,13 @@ export default function UsersPage() {
                                             borderRadius: '6px',
                                             fontWeight: 'bold',
                                             fontSize: '12px',
-                                            background: user.role === 'Admin' ? '#E6E6FA' : user.role === 'Agent' ? '#E6F8F1' : '#F4F7FE',
-                                            color: user.role === 'Admin' ? '#4318FF' : user.role === 'Agent' ? '#05CD99' : '#006AFF'
+                                            background: ['ADMIN', 'COMMUNE_ADMIN'].includes(user.role) ? '#E6E6FA' : user.role === 'TECH_AGENT' ? '#FFF5E6' : user.role === 'PROMOTEUR' ? '#E6F0FF' : '#F4F7FE',
+                                            color: ['ADMIN', 'COMMUNE_ADMIN'].includes(user.role) ? '#4318FF' : user.role === 'TECH_AGENT' ? '#FF8C00' : user.role === 'PROMOTEUR' ? '#006AFF' : '#666'
                                         }}>
-                                            {user.role}
+                                            {user.role} {user.department ? `(${user.department})` : ''}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '16px', color: '#666' }}>{user.lastLogin}</td>
+                                    <td style={{ padding: '16px', color: '#666' }}>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
                                     <td style={{ padding: '16px' }}>
                                         <span style={{
                                             color: user.status === 'Actif' ? '#05CD99' : '#E31A1A',
@@ -176,28 +204,50 @@ export default function UsersPage() {
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
                     <div style={{ background: 'white', padding: '32px', borderRadius: '16px', width: '500px', maxWidth: '90%' }}>
                         <h2 style={{ marginBottom: '24px', color: '#1B254B' }}>Modifier l'utilisateur</h2>
-                        <form onSubmit={(e) => { e.preventDefault(); alert('Utilisateur modifié!'); setShowEditModal(false); }}>
+                        <form onSubmit={handleSaveEdit}>
                             <div style={{ marginBottom: '16px' }}>
                                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Nom</label>
-                                <input type="text" defaultValue={selectedUser.name} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px' }} />
+                                <input type="text" value={editFormData.name} onChange={(e) => setEditFormData({...editFormData, name: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }} />
                             </div>
                             <div style={{ marginBottom: '16px' }}>
                                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Email</label>
-                                <input type="email" defaultValue={selectedUser.email} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px' }} />
+                                <input type="email" value={editFormData.email} onChange={(e) => setEditFormData({...editFormData, email: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }} />
                             </div>
                             <div style={{ marginBottom: '16px' }}>
                                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Rôle</label>
-                                <select defaultValue={selectedUser.role} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px' }}>
-                                    <option>Utilisateur</option>
-                                    <option>Agent</option>
-                                    <option>Admin</option>
+                                <select value={editFormData.role} onChange={(e) => setEditFormData({...editFormData, role: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }}>
+                                    <option value="USER">Utilisateur Normal</option>
+                                    <option value="AGENT">Agent Immobilier</option>
+                                    <option value="ADMIN">Administrateur Système</option>
+                                    <option value="OWNER">Propriétaire</option>
+                                    <option value="COMMUNE_ADMIN">Admin Commune (PPP)</option>
+                                    <option value="PROMOTEUR">Promoteur (PPP)</option>
+                                    <option value="TECH_AGENT">Agent Technique (PPP)</option>
                                 </select>
                             </div>
+                            
+                            {editFormData.role === 'TECH_AGENT' && (
+                                <div style={{ marginBottom: '16px' }}>
+                                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Département (Agent Technique)</label>
+                                    <select value={editFormData.department || ''} onChange={(e) => setEditFormData({...editFormData, department: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }}>
+                                        <option value="">Sélectionner un département...</option>
+                                        <option value="ONAS">ONAS (Assainissement)</option>
+                                        <option value="SENELEC">SENELEC (Électricité)</option>
+                                        <option value="SDE">SDE (Eaux)</option>
+                                        <option value="AGEROUTE">AGEROUTE (Routes)</option>
+                                        <option value="Protection Civile">Protection Civile</option>
+                                        <option value="Urbanisme">Urbanisme</option>
+                                        <option value="DGID">DGID (Domaines)</option>
+                                        <option value="Prefet">Préfecture</option>
+                                    </select>
+                                </div>
+                            )}
+
                             <div style={{ marginBottom: '16px' }}>
                                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>Statut</label>
-                                <select defaultValue={selectedUser.status} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px' }}>
-                                    <option>Actif</option>
-                                    <option>Suspendu</option>
+                                <select value={editFormData.status} onChange={(e) => setEditFormData({...editFormData, status: e.target.value})} style={{ width: '100%', padding: '12px', border: '1px solid #ddd', borderRadius: '8px', boxSizing: 'border-box' }}>
+                                    <option value="Actif">Actif</option>
+                                    <option value="Suspendu">Suspendu</option>
                                 </select>
                             </div>
                             <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
